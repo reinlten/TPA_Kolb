@@ -82,8 +82,10 @@ for i in range(0, int(len(signal1) / period) + 1):
     max2.append(max(signal2_scaled_shifted[i * period:(i + 1) * period]))
     min2.append(min(signal2_scaled_shifted[i * period:(i + 1) * period]))
 
-print(min1)
-print(min2)
+print(signal1_shifted[100000:100100])
+print(signal2_scaled_shifted[100060:100160])
+
+
 
 korr = []
 temp_sum = []
@@ -91,12 +93,12 @@ temp_sum = []
 # shift signal2 k steps and subtract signal1. Smallest sum wins
 # this is probably slow. Gradient decent advisable (2 fors -> not good.
 # runtime with k = -50..50: 48,744s).
-for k in range(1895,1905,1):
-    for i in range(0,len(signal1)-abs(k)):
+for k in range(-100,100):
+    for i in range(0,len(signal1)-100):
         if k < 0:
-            temp_sum.append(signal1_shifted[i-k] - signal2_scaled_shifted[i])
+            temp_sum.append(abs(signal1_shifted[i-k] - signal2_scaled_shifted[i]))
         else:
-            temp_sum.append(signal1_shifted[i] - signal2_scaled_shifted[i+k])
+            temp_sum.append(abs(signal1_shifted[i] - signal2_scaled_shifted[i+k]))
 
     korr.append(sum(temp_sum))
     temp_sum = []
@@ -107,6 +109,6 @@ print(korr)
 print(min(korr))
 for i in range(len(korr)):
     if korr[i] == min(korr):
-        print(i+1895)
+        print("verschiebung: " + str(i))
 
 print("calc time: " + '{:5.3f}s'.format(end - start))
