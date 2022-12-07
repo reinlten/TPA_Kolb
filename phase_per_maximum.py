@@ -2,7 +2,7 @@ import time
 
 start = time.time()
 
-file = open("Messdaten/step1.txt", "r")
+file = open("1_Messung 10-90Hz/step1.txt", "r")
 data = file.readlines()
 
 # init arrays
