@@ -1,7 +1,7 @@
 clearvars;
 
 % specify file path
-filePath = 'C:\Users\jonas\Meine Ablage\Uni\5_WS 2022_2023\Teamprojektarbeit\Aktuell\Messungen BBB\07.12.22_Referenz_AP\1k - 10k Hz 07.12.22\step1.txt';
+filePath = 'G:\Meine Ablage\Uni Stuff\WS22 23\TPA\Messungen (neu)\7.12.22\1k - 10k Hz 07.12.22\step1.txt';
 
 % specify length of data to use
 dataLength = 100000;
