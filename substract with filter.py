@@ -1,9 +1,10 @@
 import time
 import matplotlib.pyplot as plt
+import scipy.signal as signal
 
 start = time.time()
 
-file = open("1_Messung 10-90Hz/step1.txt", "r")
+file = open("Messungen (neu)/7.12.22/1k - 10k Hz 07.12.22/step1.txt", "r")
 data = file.readlines()
 
 
@@ -45,54 +46,65 @@ for d in data[1:]:
     signal1.append(int(d.split(" ")[0]))
     signal2.append(int(d.split(" ")[1]))
 
+#TODO cutoff autom. bestimmen je nach abtastfrequenz und tatsächlicher frequenz
+kern = signal.firwin(2047, cutoff = 0.01, window = "hamming")
+signal11 = signal.lfilter(kern, 1, signal1)[10000:]
+signal21 = signal.lfilter(kern, 1, signal2)[10000:]
+
+# amplitude via max/min
+for i in range(0, int(len(signal11) / period) + 1):
+    max1.append(max(signal11[i * period:(i + 1) * period]))
+    min1.append(min(signal11[i * period:(i + 1) * period]))
+    max2.append(max(signal21[i * period:(i + 1) * period]))
+    min2.append(min(signal21[i * period:(i + 1) * period]))
+
+# average maximum
+am1 = sum(max1) / len(max1)
+am2 = sum(max2) / len(max2)
+
+y_shift_1 = (sum(max1) / len(max1) + sum(min1) / len(min1)) / 2
+y_shift_2 = (sum(max2) / len(max2) + sum(min2) / len(min2)) / 2
+
+amplitude1 = (am1 - (sum(min1) / len(min1))) / 2
+amplitude2 = (am2 - (sum(min2) / len(min2))) / 2
+
+print("amp sig1: " + str(amplitude1))
+print("amp sig2: " + str(amplitude2))
+
+
+scale = amplitude2/amplitude1
+
+
+signal1_shifted = [] #and scaled
+signal2_shifted = []
+
+# set up signals on same y-level and same scale.
+for i in range(0, len(signal11)):
+    signal1_shifted.append(scale*(signal11[i]-y_shift_1))
+    signal2_shifted.append(signal21[i]-y_shift_2)
+
+#TODO: Zeit ordentlich anpassen
 # x axis values
-for i in range(0,len(signal1)):
+for i in range(0,len(signal1_shifted)):
     t.append(i)
 
+#Differenz der beiden signale bilden
+subst = []
 
-# filtering: if the derivative deviates to strong from values from before, the values will be adjusted.
-dsig1 = signal1[0]-signal1[1]
-i = 0
-#while i < len(signal1)-10:
-#    i = i + 1
-#    if dsig1+20 > abs(signal1[i]-signal1[i+1]) > dsig1-20:
-#        dsig1 = abs(signal1[i]-signal1[i+1])
-#    else:
-#        #print(f"values around i: {signal1[i-1]},{signal1[i]},{signal1[i+1]}")
-#        signal1[i+1] = 2*signal1[i]-signal1[i-1]
-#        dsig1 = abs(signal1[i] - signal1[i + 1])
-#        #print(f"index: {i}")
-#        #print(f"values around i: {signal1[i-1]},{signal1[i]},{signal1[i+1]}")
-#        #print()
-#        i = i+1
-signal11 = []
-
-for s in signal1:
-    signal11.append(s)
-
-if len(signal1) == len(signal11):
-    print("same dim!")
-else:
-    print(f"not same dim! dim1 = {len(signal1)}, dim11 = {len(signal11)}")
-
-for j in range(0,10):
-    for i in range(1000,len(signal11)-1000):
-        signal11[i] = sum(signal11[i-1000:i+1000])/2000
+for i in range(0, len(signal1_shifted)):
+    subst.append(signal2_shifted[i]-signal1_shifted[i]) #bin ich ned so davon begeistert
 
 
-#dsig1 = signal1[0]-signal1[1]
 
-#for i in range(1, len(signal1)-1):
-#    if dsig1+10 > abs(signal1[i]-signal1[i+1]) > dsig1-10:
-#        dsig1 = abs(signal1[i]-signal1[i+1])
-#    else:
-#        #signal1[i+1] = 2*signal1[i]-signal1[i-1]
-#        print(f"index: {i}")
-#        #print(f"values around i: {signal1[i-1]},{signal1[i]},{signal1[i+1]}")
 
-# plotting the points
-plt.plot(t, signal1)
-plt.plot(t, signal11)
+end = time.time()
+
+print("calc time: " + '{:5.3f}s'.format(end - start))
+
+plt.plot(t, signal1_shifted)
+plt.plot(t, signal2_shifted)
+plt.plot(t, subst)
+
 
 # naming the x axis
 plt.xlabel('x - axis')
@@ -107,6 +119,6 @@ plt.show()
 
 
 
-end = time.time()
 
-print("calc time: " + '{:5.3f}s'.format(end - start))
+
+
