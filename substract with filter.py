@@ -4,7 +4,7 @@ import scipy.signal as signal
 
 start = time.time()
 
-file = open("Messungen (neu)/7.12.22/1k - 10k Hz 07.12.22/step1.txt", "r")
+file = open("Messungen (neu)/14.12.2022_AP_1/10k - 100k/step5.txt", "r")
 data = file.readlines()
 
 
@@ -84,6 +84,7 @@ for i in range(0, len(signal11)):
     signal2_shifted.append(signal21[i]-y_shift_2)
 
 #TODO: Zeit ordentlich anpassen
+
 # x axis values
 for i in range(0,len(signal1_shifted)):
     t.append(i)
@@ -95,15 +96,39 @@ for i in range(0, len(signal1_shifted)):
     subst.append(signal2_shifted[i]-signal1_shifted[i]) #bin ich ned so davon begeistert
 
 
+print(subst[10000:20000])
+#from numpy.fft import fft, ifft
+#import numpy as np
+
+
+#X = fft(subst[:100000])
+#N = len(X)
+#n = np.arange(N)
+#T = N/sampling
+#freq = n/T
+
+#plt.figure(figsize = (12, 6))
+#plt.subplot(121)
+
+#plt.stem(freq, np.abs(X), 'b',
+#         markerfmt=" ", basefmt="-b")
+#plt.xlabel('Freq (Hz)')
+#plt.ylabel('FFT Amplitude |X(freq)|')
+#plt.xlim(0, 1100)
+
+end = time.time()
+print("calc time: " + '{:5.3f}s'.format(end - start))
+
+plt.show()
 
 
 end = time.time()
 
 print("calc time: " + '{:5.3f}s'.format(end - start))
 
-plt.plot(t, signal1_shifted)
-plt.plot(t, signal2_shifted)
-plt.plot(t, subst)
+plt.plot(t[10000:20000], signal1_shifted[10000:20000])
+plt.plot(t[10000:20000], signal2_shifted[10000:20000])
+plt.plot(t[10000:20000], subst[10000:20000])
 
 
 # naming the x axis

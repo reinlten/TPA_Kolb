@@ -81,7 +81,6 @@ print(signal3[:10000])
 # TODO: funktioniert überhaupt nicht!!!!! Bei Messung/step1 kommt eine
 #  Amplitude von 1.000.000 raus, des kann niemals passen
 #  (in Octave warens um die 1000).
-#  Richtiges drecksverfahren, scrape it
 
 X = fft(signal3[:100000])
 N = len(X)
