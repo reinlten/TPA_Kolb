@@ -11,7 +11,6 @@ def messschritt(file_path, amplitudes, phases, frequencies):
     file.close()
 
     number_of_samples = 10000 
-    
 
     header_lines = []
     data_lines = []
@@ -68,71 +67,20 @@ def messschritt(file_path, amplitudes, phases, frequencies):
     phases_voltage = np.angle(fft_coefficients_voltage)
     phases_current = np.angle(fft_coefficients_current)
 
-    # real1 = amplitudes_voltage * np.cos(phases_voltage)
-    # imag1 = amplitudes_current * np.sin(phases_current)
-
-    # real2 = [x.real for x in fft_coefficients_current]
-    # imag2 = [x.imag for x in fft_coefficients_current]
-
-    # plt.plot(real1, imag1)
-    # plt.plot(real2, imag2)
-    # plt.show()
-
-    # fig, ax = plt.subplots(2, 2, figsize=(10, 8))
-    # plt.subplots_adjust(hspace=0.3, wspace=0.5)
-
-    # ax[0][0].semilogx(frequency_vector, 20*np.log10(amplitudes1))
-    # ax[0][0].semilogx(frequency_vector, 20*np.log10(amplitudes2))
-    # ax[0][0].set_xlabel('Frequency (Hz)')
-    # ax[0][0].set_ylabel('Magnitude (dB)')
-    # ax[0][0].grid(True)
-
-    # ax[0][1].plot(frequency_vector, amplitudes1)
-    # ax[0][1].plot(frequency_vector, amplitudes2)
-    # ax[0][1].set_xlabel('Frequency (Hz)')
-    # ax[0][1].set_ylabel('Magnitude (mv)')
-    # ax[0][1].grid(True)
-
-    # ax[1][0].semilogx(frequency_vector, phases2 - phases1)
-    # ax[1][0].set_xlabel('Frequency (Hz)')
-    # ax[1][0].set_ylabel('Phase (rad)')
-    # ax[1][0].grid(True)
-
-    # ax[1][1].plot(frequency_vector, phases2 - phases1)
-    # ax[1][1].set_xlabel("Realteil")
-    # ax[1][1].set_ylabel("Imaginärteil")
-    # plt.show()
-
     index = current_freq // 1000
     print(f"index: {index}")
-    print(frequency_vector[index])
 
     print(f"Amplitude of voltage: {amplitudes_voltage[index]}")
     print(f"Amplitude of current: {amplitudes_current[index]}")
     print(f"Phase of voltage: {phases_voltage[index]}")
     print(f"Phase of current: {phases_current[index]}")
-
-
-    # plt.semilogx(frequency_vector, dif)
-    # plt.semilogx(frequency_vector, diff)
-
-    # plt.show()
     
     amplitude = amplitudes_voltage[index] / (amplitudes_current[index] / 100)
     phase = (360 / (2*math.pi)) * (phases_voltage[index] - phases_current[index])
+    
     print(f"The current amplitude is: {amplitude} Ohm")
     print(f"The current phase is: {phase} degrees")
 
-    # plt.plot(time_vector, signal_1 - amplitudes1[0], label="signal 1")
-    # plt.plot(time_vector, signal_2 - amplitudes2[0], label="signal2")
-    # plt.legend()
-    # plt.show()
-
-
-    diff_amplitude = amplitude / 369 * 100
-    diff_phase = phase / -18.6 * 100
-
-    print(diff_amplitude, diff_phase)
     amplitudes.append(amplitude)
     phases.append(phase)
 
