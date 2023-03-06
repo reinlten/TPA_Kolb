@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-import os
-import re
+
 
 file_path = r"C:\Users\jonas\Desktop\Uni\Teamprojektarbeit\Aktuell\Messungen BBB\07.02.2023_1/10kHz - 90kHz/step5.txt"
 
