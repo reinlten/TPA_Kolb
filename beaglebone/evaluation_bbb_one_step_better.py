@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 import math
 
 
-file_path = r"C:\Users\jonas\Desktop\Uni\Teamprojektarbeit\Aktuell\Messungen BBB\07.02.2023_1/10kHz - 90kHz/step5.txt"
-
+ 
 # Legt die Anzahl an Datenpunkten fest
 number_of_samples = 100000
 
