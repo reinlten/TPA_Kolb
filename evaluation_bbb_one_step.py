@@ -4,10 +4,10 @@ import math
 import os
 import re
 
-file_path = r"C:\Users\jonas\Desktop\Uni\Teamprojektarbeit\Aktuell\Messungen BBB\14.12.2022_AP_1\10k - 100k\step5.txt"
+file_path = r"C:\Users\jonas\Desktop\m1\100 1000 k\step1.txt"
 
 # Must be >= 1000
-number_of_samples = 100000
+number_of_samples = 10000
 
 with open(file_path, "r") as file:
     lines = file.readlines()
