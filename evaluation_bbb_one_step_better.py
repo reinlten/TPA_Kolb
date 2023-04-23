@@ -4,7 +4,7 @@ import math
 import os
 import re
 
-file_path = r"C:\Users\jonas\Desktop\Uni\Teamprojektarbeit\Aktuell\Messungen BBB\07.02.2023_1/10kHz - 90kHz/step5.txt"
+file_path = r"C:\Users\jonas\Desktop\TPA_Kolb\07.02.2023_1\100kHz - 1MHz\step1.txt"
 
 # Legt die Anzahl an Datenpunkten fest
 number_of_samples = 100000
@@ -21,11 +21,9 @@ data_lines = []
 
 # Liest die Zeilen ein
 for line in range(1):
-    # Stores the header in header_lines
     header_lines.append(lines[line])
     
 for line in range(1,number_of_samples + 1):
-    # Stores the data in data_lines
     data_lines.append(lines[line])
 
 # Formatiert den Header und die Datenzeilen richtig
