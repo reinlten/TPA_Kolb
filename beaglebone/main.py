@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 import math
 
 def main():
-    print("Test")
-    
     # Sets the path of the textfile of the measurement
     file_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\07.02.2023_1\1kHz - 9kHz\step1.txt"
     
@@ -28,14 +26,20 @@ def main():
     
     voltage1 = []
     voltage2 = []
-    
+
     for i in range(number_of_samples):
         first, second = data[i].split()
         voltage1.append(int(first))
         voltage2.append(int(second))
-        voltage1[i] *= 7  
+        # voltage1[i] *= 7  
+        
+    factor = 4700 / (max(voltage1) / 2)
 
-   
+    for i in range(len(voltage1)):
+        voltage1[i] *= factor
+        
+    print(f"Factor: {factor}")
+    
     dt = 1 / sample_freq
     df = sample_freq / number_of_samples
     time_vector = np.arange(0, number_of_samples * dt, dt)
@@ -71,8 +75,7 @@ def main():
     
     magnitudes_voltage_dut = np.abs(fft_coefficients_voltage_dut)
     magnitudes_current = np.abs(fft_coefficients_current)
-
-    # Berechnet die Phases der DUT-Spannung und dem DUT-Strom
+    # Berechnet die Phasen der DUT-Spannung und dem DUT-Strom
     phases_voltage_dut = np.angle(fft_coefficients_voltage_dut)
     phases_current = np.angle(fft_coefficients_current) 
 

@@ -56,7 +56,13 @@ for folder in folder_paths:
                 first, second = data[i].split()
                 voltage1.append(int(first))
                 voltage2.append(int(second))
-                voltage1[i] *= 7  
+       
+        factor = 4700 / (max(voltage1) / 2)
+
+        for i in range(len(voltage1)):
+            voltage1[i] *= factor
+        
+        print(f"Factor: {factor}")
 
         dt = 1 / sample_freq
         df = sample_freq / number_of_samples
