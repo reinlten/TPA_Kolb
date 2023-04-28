@@ -7,10 +7,7 @@ def main():
     print("Test")
     
     # Sets the path of the textfile of the measurement
-    file_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\07.02.2023_1\100kHz - 1MHz\step1.txt"
-    
-    # Sets the number of samples that are used
-    number_of_samples = 100000
+    file_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\07.02.2023_1\1kHz - 9kHz\step1.txt"
     
     with open(file_path, "r") as file:
         lines = file.readlines()
@@ -36,6 +33,8 @@ def main():
         first, second = data[i].split()
         voltage1.append(int(first))
         voltage2.append(int(second))
+        voltage1[i] *= 7  
+
    
     dt = 1 / sample_freq
     df = sample_freq / number_of_samples
