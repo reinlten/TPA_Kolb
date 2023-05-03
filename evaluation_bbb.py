@@ -57,6 +57,8 @@ for folder in folder_paths:
         periods_wanted = 100
         number_of_samples = periods_wanted * (sample_freq // current_freq)
         
+        # number_of_samples = len(data)
+        
         # Datenwerte werden in Gesamtspannung (voltage1) und Shuntspannung (voltage2) geteilt
         voltage1 = []
         voltage2 = []
@@ -109,7 +111,7 @@ for folder in folder_paths:
         phases_current = np.angle(fft_coefficients_current) 
         
         # Daten der aktuellen Frequenz werden ausgegeben
-        print(f"Current frequency: {current_freq}")
+        print(f"Current frequency: {current_freq} Hz")
 
         print(f"Magnitude of DC component of voltage: {magnitudes_voltage_dut[0]} mV")
         print(f"Magnitude of DC component of current: {magnitudes_current[0]} mA")
@@ -153,19 +155,23 @@ plt.subplots_adjust(hspace=0.5, wspace=0.5)
 
 ax[0][0].plot(time_vector, voltage1)
 ax[0][0].plot(time_vector, voltage2)
+ax[0][0].set_title("Gesamt- und Shuntspannung")
 ax[0][0].set_xlabel("Zeit (s)")
 ax[0][0].set_ylabel("Spannung (mVolt)")
 
 ax[1][0].plot(real_parts, imag_parts)
+ax[1][0].set_title("Nyquist-Diagramm")
 ax[1][0].set_xlabel("Realteil")
 ax[1][0].set_ylabel("Imaginärteil")
 
 ax[0][1].semilogx(frequencies, magnitudes)
-ax[0][1].set_xlabel('Frequency (Hz)')
-ax[0][1].set_ylabel("Magnitude (Ohm)")
+ax[0][1].set_title("Amplitudengang")
+ax[0][1].set_xlabel('Frequenz (Hz)')
+ax[0][1].set_ylabel("Amplitude (Ohm)")
 
 ax[1][1].semilogx(frequencies, phases)
-ax[1][1].set_xlabel('Frequency (Hz)')
+ax[1][1].set_title("Frequenzgang")
+ax[1][1].set_xlabel('Frequenz (Hz)')
 ax[1][1].set_ylabel("Phase (°)")
 
 plt.show()
