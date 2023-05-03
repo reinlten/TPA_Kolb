@@ -23,7 +23,7 @@ def circuit_1(frequency, r1, r2, r3, c1):
     return series(parallel(resistor(r2), series(resistor(r1), capacitor(c1, frequency))), resistor(r3))
     
 def circuit_test(frequency, r1, c1):
-    return series(resistor(r1), capacitor(c1, frequency))
+    return parallel(resistor(r1), capacitor(c1, frequency))
     
     
 def main():
@@ -35,7 +35,7 @@ def main():
     r1 = 1000
     r2 = 560
     r3 = 100
-    c1 = 180 * 10**-12
+    c1 = 5 * 10**-12
     
     # Define arrays for the resulting impedance values and frequencies
     results = []
@@ -43,7 +43,7 @@ def main():
     
     # Calculates the resulting impedance in the given frequency interval
     for freq in range(min_frequency, max_frequency):
-        result = circuit_1(freq, r1, r2, r3, c1)
+        result = circuit_test(freq, r1, c1)
         results.append(result)
         frequencies.append(freq)
     
@@ -74,7 +74,8 @@ def main():
     ax[0].grid(True)
     
     # Plot the magnitude response on a logarithmic scale
-    ax[1].semilogx(frequencies, 20*np.log10(mag), 'b')
+    # ax[1].semilogx(frequencies, 20*np.log10(mag), 'b')
+    ax[1].plot(frequencies, mag, 'b')
     ax[1].set_xlabel('Frequency (Hz)')
     ax[1].set_ylabel('Magnitude (dB)')
     ax[1].grid(True)

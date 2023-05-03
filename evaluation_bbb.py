@@ -11,6 +11,8 @@ measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen 
 magnitudes = []
 phases = []
 frequencies = []
+real_parts = []
+imag_parts = []
 
 # Hilfsfunktion zur Sortierung der Dateien
 def extract_number(file_path):
@@ -52,7 +54,7 @@ for folder in folder_paths:
         number_of_samples_per_period = int(number_of_samples_per_period)
         
         # Anzahl der Dateipunkte wird über Periodenanzahl bestimmt
-        periods_wanted = 10
+        periods_wanted = 100
         number_of_samples = periods_wanted * (sample_freq // current_freq)
         
         # Datenwerte werden in Gesamtspannung (voltage1) und Shuntspannung (voltage2) geteilt
@@ -102,10 +104,10 @@ for folder in folder_paths:
         magnitudes_voltage_dut = np.abs(fft_coefficients_voltage_dut)
         magnitudes_current = np.abs(fft_coefficients_current)
 
-        # Berechnet die Phases der DUT-Spannung und dem DUT-Strom
+        # Berechnet die Phasen der DUT-Spannung und dem DUT-Strom
         phases_voltage_dut = np.angle(fft_coefficients_voltage_dut)
         phases_current = np.angle(fft_coefficients_current) 
-
+        
         # Daten der aktuellen Frequenz werden ausgegeben
         print(f"Current frequency: {current_freq}")
 
@@ -116,8 +118,8 @@ for folder in folder_paths:
         index = int(current_freq / df)
 
         # Phasen werden in Grad umgerechnet
-        phase_voltage_dut = (360 / (2*math.pi)) * phases_voltage_dut[index]
-        phase_current = (360 / (2*math.pi)) * phases_current[index]
+        phase_voltage_dut = np.rad2deg(phases_voltage_dut[index])
+        phase_current = np.rad2deg(phases_current[index])
 
         print(f"Magnitude of voltage: {magnitudes_voltage_dut[index]} mV")
         print(f"Magnitude of current: {magnitudes_current[index]} mA")
@@ -127,6 +129,13 @@ for folder in folder_paths:
         # Berechnet die Amplitude und die Phase der Impedanz bei der aktuellen Frequenz
         magnitude_impedance_dut = magnitudes_voltage_dut[index] / magnitudes_current[index]
         phase_impedance_dut = phase_voltage_dut - phase_current
+        
+        # Phase der Impedanz wird zurückgerechnet auf radian
+        phase_in_rad = np.deg2rad(phase_impedance_dut)
+        
+        # Real- und Imaginärteil derImpedanz werden für das Nyquist Diagramm berechnet
+        real = magnitude_impedance_dut * np.cos(phase_in_rad)
+        imag = magnitude_impedance_dut * np.sin(phase_in_rad)
 
         print(f"Magnitude of Impedance: {magnitude_impedance_dut} Ohm")
         print(f"Phase of Impedance: {phase_impedance_dut} degrees")
@@ -135,17 +144,28 @@ for folder in folder_paths:
         frequencies.append(current_freq)
         magnitudes.append(magnitude_impedance_dut)
         phases.append(phase_impedance_dut)
+        real_parts.append(real)
+        imag_parts.append(imag)
         
 # Visualisiert den Amplituden und Phasengang der Messung
-fig, ax = plt.subplots(2, 1, figsize=(8, 6))
-plt.subplots_adjust(hspace=0.5)
+fig, ax = plt.subplots(2, 2, figsize=(12, 7))
+plt.subplots_adjust(hspace=0.5, wspace=0.5)
 
-ax[0].semilogx(frequencies, magnitudes)
-ax[0].set_xlabel('Frequency (Hz)')
-ax[0].set_ylabel("Magnitude (Ohm)")
+ax[0][0].plot(time_vector, voltage1)
+ax[0][0].plot(time_vector, voltage2)
+ax[0][0].set_xlabel("Zeit (s)")
+ax[0][0].set_ylabel("Spannung (mVolt)")
 
-ax[1].semilogx(frequencies, phases)
-ax[1].set_xlabel('Frequency (Hz)')
-ax[1].set_ylabel("Phase (°)")
+ax[1][0].plot(real_parts, imag_parts)
+ax[1][0].set_xlabel("Realteil")
+ax[1][0].set_ylabel("Imaginärteil")
+
+ax[0][1].semilogx(frequencies, magnitudes)
+ax[0][1].set_xlabel('Frequency (Hz)')
+ax[0][1].set_ylabel("Magnitude (Ohm)")
+
+ax[1][1].semilogx(frequencies, phases)
+ax[1][1].set_xlabel('Frequency (Hz)')
+ax[1][1].set_ylabel("Phase (°)")
 
 plt.show()
