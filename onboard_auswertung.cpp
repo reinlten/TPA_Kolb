@@ -29,7 +29,6 @@ int main() {
 	// Close the file
 	file.close();
 
-    // Impedanz berechnen
     // Header und Daten werden geteilt
     std::string header = lines[0];
     std::vector<std::string> data;

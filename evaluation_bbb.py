@@ -5,7 +5,7 @@ import os
 import re
 
 # Pfad wo die Ordner mit den Messungen liegen
-measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\07.02.2023_1"
+measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\komplett"
 
 # Arrays für die Speicherung der Amplituden, Phasen und Frequenzen
 magnitudes = []
@@ -54,15 +54,17 @@ for folder in folder_paths:
         number_of_samples_per_period = int(number_of_samples_per_period)
         
         # Anzahl der Dateipunkte wird über Periodenanzahl bestimmt
-        periods_wanted = 100
+        periods_wanted = 10
         number_of_samples = periods_wanted * (sample_freq // current_freq)
-        
+       
         # number_of_samples = len(data)
         
         # Datenwerte werden in Gesamtspannung (voltage1) und Shuntspannung (voltage2) geteilt
         voltage1 = []
         voltage2 = []
-
+        
+        number_of_samples = len(data)
+        
         for i in range(number_of_samples):
                 first, second = data[i].split()
                 voltage1.append(int(first))
@@ -153,18 +155,25 @@ for folder in folder_paths:
 fig, ax = plt.subplots(2, 2, figsize=(12, 7))
 plt.subplots_adjust(hspace=0.5, wspace=0.5)
 
-ax[0][0].plot(time_vector, voltage1)
-ax[0][0].plot(time_vector, voltage2)
-ax[0][0].set_title("Gesamt- und Shuntspannung")
-ax[0][0].set_xlabel("Zeit (s)")
-ax[0][0].set_ylabel("Spannung (mVolt)")
+# ax[0][0].plot(time_vector, voltage1)
+# ax[0][0].plot(time_vector, voltage2)
+# ax[0][0].set_title("Gesamt- und Shuntspannung")
+# ax[0][0].set_xlabel("Zeit (s)")
+# ax[0][0].set_ylabel("Spannung (mVolt)")
+for i in range(len(real_parts)):
+    ax[0][0].arrow(0, 0, real_parts[i], imag_parts[i], head_width=0.5, head_length=0.5)
+    
+# ax[0][0].set_title("Phasoren")
+ax[0][0].plot(frequencies, magnitudes)
+ax[0][0].set_xlabel("Realteil")
+ax[0][0].set_ylabel("Imaginärteil")
 
 ax[1][0].plot(real_parts, imag_parts)
 ax[1][0].set_title("Nyquist-Diagramm")
 ax[1][0].set_xlabel("Realteil")
 ax[1][0].set_ylabel("Imaginärteil")
 
-ax[0][1].semilogx(frequencies, magnitudes)
+ax[0][1].scatter(frequencies, magnitudes)
 ax[0][1].set_title("Amplitudengang")
 ax[0][1].set_xlabel('Frequenz (Hz)')
 ax[0][1].set_ylabel("Amplitude (Ohm)")
