@@ -2,9 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import re
+from scipy import signal, stats
+from scipy.stats import trim_mean
 
 # Pfad wo die Ordner mit den Messungen liegen
-measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\100 mal 10000"
+measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\geht\rc_50000"
 
 # Arrays für die Speicherung der Amplituden, Phasen und Frequenzen
 magnitudes = []
@@ -47,12 +49,6 @@ for file in file_paths:
     number_of_periods = int(number_of_periods)
     number_of_samples_per_period = int(number_of_samples_per_period)
     
-    # Anzahl der Dateipunkte wird über Periodenanzahl bestimmt
-    periods_wanted = 10
-    number_of_samples = periods_wanted * (sample_freq // current_freq)
-    
-    # number_of_samples = len(data)
-    
     # Datenwerte werden in Gesamtspannung (voltage1) und Shuntspannung (voltage2) geteilt
     voltage1 = []
     voltage2 = []
@@ -64,14 +60,10 @@ for file in file_paths:
             voltage1.append(int(first))
             voltage2.append(int(second))
     
-    # Kompensationsfaktor für 10 kOhm Widerstand wird berechnet und Spannung wird damit multipliziert
-    factor = 4780 / (max(voltage1) / 2)
+    # proportiontocut = 0.05  # Proportion of values to cut
+    # voltage1 = stats.mstats.winsorize(voltage1, limits=[proportiontocut, proportiontocut])
+    # voltage2 = stats.mstats.winsorize(voltage2, limits=[proportiontocut, proportiontocut])
 
-    for i in range(len(voltage1)):
-        voltage1[i] *= factor
-    
-    print(f"Factor: {factor}")
-    
     # Größen for die Visualisierung werden berechnet
     dt = 1 / sample_freq
     df = sample_freq / number_of_samples
@@ -127,8 +119,11 @@ for file in file_paths:
     # Berechnet die Amplitude und die Phase der Impedanz bei der aktuellen Frequenz
     magnitude_impedance_dut = magnitudes_voltage_dut[index] / magnitudes_current[index]
     phase_impedance_dut = phase_voltage_dut - phase_current
-    if abs(phase_impedance_dut - last_phase) > 100:
-        phase_impedance_dut -= 360
+    if abs(phase_impedance_dut -last_phase) > 300:
+        if last_phase > 0:
+            phase_impedance_dut += 360
+        else:
+            phase_impedance_dut -= 360
         
     last_phase = phase_impedance_dut    
     
@@ -153,22 +148,16 @@ for file in file_paths:
 fig, ax = plt.subplots(2, 2, figsize=(12, 7))
 plt.subplots_adjust(hspace=0.5, wspace=0.5)
 
-ax[0][0].plot(time_vector, voltage1)
-ax[0][0].plot(time_vector, voltage2)
-ax[0][0].set_title("Gesamt- und Shuntspannung")
-ax[0][0].set_xlabel("Zeit (s)")
-ax[0][0].set_ylabel("Spannung (mVolt)")
+ax[0][0].plot(real_parts, imag_parts)
+ax[0][0].set_title("Nyquist-Diagramm")
+ax[0][0].set_xlabel("Realteil")
+ax[0][0].set_ylabel("Imaginärteil")
 
-    
-# ax[0][0].set_title("Phasoren")
-# ax[0][0].plot(frequencies, magnitudes)
-# ax[0][0].set_xlabel("Realteil")
-# ax[0][0].set_ylabel("Imaginärteil")
-
-ax[1][0].plot(real_parts, imag_parts)
+ax[1][0].scatter(real_parts, imag_parts)
 ax[1][0].set_title("Nyquist-Diagramm")
 ax[1][0].set_xlabel("Realteil")
 ax[1][0].set_ylabel("Imaginärteil")
+
 
 ax[0][1].semilogx(frequencies, magnitudes)
 ax[0][1].set_title("Amplitudengang")
@@ -176,7 +165,7 @@ ax[0][1].set_xlabel('Frequenz (Hz)')
 ax[0][1].set_ylabel("Amplitude (Ohm)")
 
 ax[1][1].semilogx(frequencies, phases)
-ax[1][1].set_title("Frequenzgang")
+ax[1][1].set_title("Phasengang")
 ax[1][1].set_xlabel('Frequenz (Hz)')
 ax[1][1].set_ylabel("Phase (°)")
 
