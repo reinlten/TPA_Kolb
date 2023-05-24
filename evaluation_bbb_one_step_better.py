@@ -3,124 +3,122 @@ import matplotlib.pyplot as plt
 import math
 import os
 import re
+from scipy import signal, stats
+from scipy.stats import trim_mean
 
-file_path = r"C:\Users\jonas\Desktop\TPA_Kolb\07.02.2023_1\100kHz - 1MHz\step1.txt"
 
-# Legt die Anzahl an Datenpunkten fest
-number_of_samples = 100000
+file_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\geht\1kOhm\step94.txt"
 
-# Liest die Daten ein
+last_phase = 0
+
+# Textdatei wird gelesen
 with open(file_path, "r") as file:
     lines = file.readlines()
 
 file.close()
 
-# Speichert den Header und die Datenzeilen in verschiedene Arrrays
-header_lines = []
-data_lines = []
+# Header und Daten werden geteilt
+header = lines[0]
+data = lines[1:]
 
-# Liest die Zeilen ein
-for line in range(1):
-    header_lines.append(lines[line])
-    
-for line in range(1,number_of_samples + 1):
-    data_lines.append(lines[line])
+# Header wird ausgelesen und gespeichert
+current_freq, sample_freq, number_of_periods, number_of_samples_per_period = header.split()
 
-# Formatiert den Header und die Datenzeilen richtig
-data = []
-header = []
+# Headerwerte werden in die richtige Form gebracht
+current_freq = int(current_freq)
+sample_freq = int(sample_freq)
+number_of_periods = int(number_of_periods)
+number_of_samples_per_period = int(number_of_samples_per_period)
 
-for line in data_lines:
-    data.append(line.split())
+# Anzahl der Dateipunkte wird über Periodenanzahl bestimmt
+periods_wanted = 10
+number_of_samples = periods_wanted * (sample_freq // current_freq)
 
-header_lines = header_lines[0].strip()
-values = header_lines.split(" ")
-
-# Extrahiert die Werte aus dem Header
-current_freq = int(values[0])
-sample_freq = int(values[1])
-number_of_periods = int(values[2])
-number_of_samples_per_period = int(values[3])
-
-# Formatiert die Daten für die Weiterverarbeitung
-for i in range(len(data)):
-    data[i][1] = data[i][1].rstrip()
-    data[i][0] = int(data[i][0])
-    data[i][1] = int(data[i][1])
-
-# Erstellt den Zeit- und Frequenzvektor
-dt = 1 / sample_freq
-df = sample_freq /number_of_samples
-time_vector = np.arange(0, number_of_samples * dt, dt)
-frequency_vector = np.arange(0, number_of_samples * df, df)
-
-# print(len(data))
-# print(len(time_vector))
-# print(time_vector[-1])
-# print(len(frequency_vector))
-# print(frequency_vector[0])
-# print(frequency_vector[-1])
-# print(df)
-
-# Teilt die Daten in ein Spannungs- und ein Stromarray auf
+# Datenwerte werden in Gesamtspannung (voltage1) und Shuntspannung (voltage2) geteilt
 voltage1 = []
 voltage2 = []
 
-for row in data:
-    voltage1.append(row[0])
-    voltage2.append(row[1])
-    
-# Führt die FFT auf beiden Spannungssignalen aus
+number_of_samples = len(data)
+
+for i in range(number_of_samples):
+        first, second = data[i].split()
+        voltage1.append(int(first))
+        voltage2.append(int(second))
+
+# proportiontocut = 0.1  # Proportion of values to cut
+# voltage1 = stats.mstats.winsorize(voltage1, limits=[proportiontocut, proportiontocut])
+# voltage2 = stats.mstats.winsorize(voltage2, limits=[proportiontocut, proportiontocut])
+
+# Größen for die Visualisierung werden berechnet
+dt = 1 / sample_freq
+df = sample_freq / number_of_samples
+time_vector = np.arange(0, number_of_samples * dt, dt)
+frequency_vector = np.arange(0, number_of_samples * df, df)
+
+# Fourierkoeffizienten der beiden Spannungen werden berechnet 
 fft_coefficients_voltage1 = 2 * np.fft.fft(voltage1) / number_of_samples
 fft_coefficients_voltage2 = 2 * np.fft.fft(voltage2) / number_of_samples
 
-# Berechnet den Gleichanteil richtig
-fft_coefficients_voltage1[0] / 2
-fft_coefficients_voltage2[0] / 2
+fft_coefficients_voltage1[0] /= 2
+fft_coefficients_voltage2[0] /= 2
 
-# Berechnet die Amplitude der FFt Koeffizienten
-mag1 = np.abs(fft_coefficients_voltage1)
-mag2 = np.abs(fft_coefficients_voltage2)
-
-# Berechnet die Phase der FFT Koeffizienten
-phase1 = np.angle(fft_coefficients_voltage1)
-phase2 = np.angle(fft_coefficients_voltage2)
-
-# plt.plot(frequency_vector, phase1)
-# plt.plot(frequency_vector, phase2)
-# plt.show()
-
-# Plottet das Amplitudenspektrum der beiden Spannungen
-plt.plot(frequency_vector, mag1)
-plt.plot(frequency_vector, mag2)
-plt.show()
-
-# print(fft_coefficients_voltage1[:5])
-
-# Berechnet die Spannung, die über dem DUT abfällt über Gesamtspannung - Shuntspannung
+# Fourierkoeffizienten der DUT-Spannung wird berechnet
 fft_coefficients_voltage_dut = []
 for i in range(len(fft_coefficients_voltage1)):
     fft_coefficients_voltage_dut.append(fft_coefficients_voltage1[i] - fft_coefficients_voltage2[i])
-    
-# Rechnet die Spannung über dem Shunt zurück in Strom
+
+# Stromstärkewerte durch DUT werden über Ohmsches Gesetz und Shuntspannung berechnet
 current = list(map(lambda x: x / 100, voltage2))
 
-# Berechnet die FFT für den Strom
+# Fourrierkoeffizienten des Stroms werden berechnet
 fft_coefficients_current = 2 * np.fft.fft(current) / number_of_samples
 
-# real__part_of_voltage = np.real(fft_coefficients_voltage_dut)
-# real__part_of_current = np.real(fft_coefficients_current)
+fft_coefficients_current[0] /= 2
 
-# imag_part_of_voltage = np.imag(fft_coefficients_voltage_dut)
-# imag_part_of_current = np.imag(fft_coefficients_current)
-
-# Berechnet die Amplitude der DUT-Spannung und dem DUT-Strom
+# Amplituden der DUT-Spannuns und des DUT-Stroms werden berechnet
 magnitudes_voltage_dut = np.abs(fft_coefficients_voltage_dut)
 magnitudes_current = np.abs(fft_coefficients_current)
 
-# Berechnet die Phases der DUT-Spannung und dem DUT-Strom
+# Berechnet die Phasen der DUT-Spannung und dem DUT-Strom
 phases_voltage_dut = np.angle(fft_coefficients_voltage_dut)
 phases_current = np.angle(fft_coefficients_current) 
+
+# Daten der aktuellen Frequenz werden ausgegeben
+print(f"Current frequency: {current_freq} Hz")
+
+print(f"Magnitude of DC component of voltage: {magnitudes_voltage_dut[0]} mV")
+print(f"Magnitude of DC component of current: {magnitudes_current[0]} mA")
+
+# Position der Werte der aktuellen Frequenz wird berechnet
+index = int(current_freq / df)
+
+# Phasen werden in Grad umgerechnet
+phase_voltage_dut = np.rad2deg(phases_voltage_dut[index])
+phase_current = np.rad2deg(phases_current[index])
+
+print(f"Magnitude of voltage: {magnitudes_voltage_dut[index]} mV")
+print(f"Magnitude of current: {magnitudes_current[index]} mA")
+print(f"Phase of voltage: {phase_voltage_dut} degrees")
+print(f"Phase of current: {phase_current} degrees")
+
+# Berechnet die Amplitude und die Phase der Impedanz bei der aktuellen Frequenz
+magnitude_impedance_dut = magnitudes_voltage_dut[index] / magnitudes_current[index]
+phase_impedance_dut = phase_voltage_dut - phase_current
+if abs(phase_impedance_dut - last_phase) > 100:
+    phase_impedance_dut -= 360
+    
+last_phase = phase_impedance_dut    
+
+# Phase der Impedanz wird zurückgerechnet auf radian
+phase_in_rad = np.deg2rad(phase_impedance_dut)
+
+# Real- und Imaginärteil derImpedanz werden für das Nyquist Diagramm berechnet
+real = magnitude_impedance_dut * np.cos(phase_in_rad)
+imag = magnitude_impedance_dut * np.sin(phase_in_rad)
+
+print(f"Magnitude of Impedance: {magnitude_impedance_dut} Ohm")
+print(f"Phase of Impedance: {phase_impedance_dut} degrees")
+
 
 print(f"Current frequency: {current_freq}")
 
@@ -160,6 +158,8 @@ ax[0][0].plot(time_vector, current)
 ax[0][1].semilogx(frequency_vector, magnitudes_voltage_dut)
 ax[0][1].semilogx(frequency_vector, magnitudes_current)
 
+ax[1][0].plot(magnitudes_voltage_dut)
+ax[1][0].plot(magnitudes_current)
 # ax[1][0].semilogx(frequency_vector, magnitudes_impedance)
 # ax[1][0].semilogx(frequency_vector, magnitudes_current)
 
