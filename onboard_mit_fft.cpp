@@ -4,8 +4,10 @@
 #include <sstream>
 #include <cmath>
 #include <complex>
+#include <filesystem>
 
 using namespace std;
+namespace fs = std::filesystem;
 
 void read_in_file(std::string file_path, std::string& header, std::vector<string>& data)
 {
@@ -63,25 +65,21 @@ void perform_dft_on_current_frequency(std::vector<double> signal, std::complex<d
     }
 }
 
-int main()
+void analyze_file(std::string filename, std::vector<double>& amplitudes, std::vector<double>& phases)
 {
-    std::vector<double> amplitudes;
-    std::vector<double> phases;
-    std::vector<int> frequencies;
-
-    std::string file_path = R"(C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\geht\100Ohm\step10.txt)";
-    std::string header;
-    std::vector<std::string> data;
+    std::string file_path = filename;
+    std::string header = "";
+    std::vector<std::string> data = {};
 
     read_in_file(file_path, header, data);
 
-    int current_freq, sample_freq, number_of_periods, number_of_samples_per_period;
+    int current_freq, sample_freq, number_of_periods, number_of_samples_per_period = 0;
     int number_of_samples = data.size();
 
-    vector<double> voltage_1;
-    vector<double> voltage_2;
-    vector<double> current;
-    
+    vector<double> voltage_1 = {};
+    vector<double> voltage_2 = {};
+    vector<double> current = {};
+
     read_header_and_data(header, data, current_freq, sample_freq, number_of_periods, number_of_samples_per_period, voltage_1, voltage_2, current, 100, number_of_samples);
 
     std::complex<double> fouriercoefficient_1 = 0;
@@ -91,7 +89,8 @@ int main()
     std::complex<double> i(0.0, 1.0);
     double pi = 3.141592653589793238462643383279;
 
-    int index = (current_freq * number_of_samples) / sample_freq;
+    // int index = (current_freq * number_of_samples) / sample_freq;
+    int index = current_freq / 1000;
     perform_dft_on_current_frequency(voltage_1, fouriercoefficient_1, i, pi, number_of_samples, index);
     perform_dft_on_current_frequency(voltage_2, fouriercoefficient_2, i, pi, number_of_samples, index);
     perform_dft_on_current_frequency(current, fouriercoefficient_current, i, pi, number_of_samples, index);
@@ -104,20 +103,60 @@ int main()
     double phase_voltage = std::arg(fouriercoefficient_voltage) * (180 / pi);
     double phase_current = std::arg(fouriercoefficient_current) * (180 / pi);
 
-    std::cout << "magnitude of voltage: "<< magnitude_voltage << std::endl;
+    std::cout << "magnitude of voltage: " << magnitude_voltage << std::endl;
     std::cout << "magnitude of current: " << magnitude_current << std::endl;
     std::cout << "phase of voltage: " << phase_voltage << std::endl;
     std::cout << "phase of current: " << phase_current << std::endl;
 
-    double magnitude_impedance = magnitude_voltage / magnitude_current;
+    double amplitude_impedance = magnitude_voltage / magnitude_current;
     double phase_impedance = (phase_voltage - phase_current);
 
-    std::cout << "magnitude of impedance: " << magnitude_impedance << std::endl;
+    std::cout << "magnitude of impedance: " << amplitude_impedance << std::endl;
     std::cout << "phase of impedance: " << phase_impedance << std::endl;
 
-    double real = magnitude_impedance * cos(phase_impedance);
-    double imag = magnitude_impedance * sin(phase_impedance);
+    double real = amplitude_impedance * cos(phase_impedance);
+    double imag = amplitude_impedance * sin(phase_impedance);
 
     std::cout << "real part of impedance: " << real << std::endl;
-    std::cout << "imaginary part of impedance: " << imag << std::endl;
+    std::cout << "imaginary part of impedance: " << imag << std::endl << std::endl;
+
+    amplitudes.push_back(amplitude_impedance);
+    phases.push_back(phase_impedance);
 }
+
+bool isTextFile(const fs::directory_entry &entry)
+{
+    return entry.path().extension() == ".txt";
+}
+
+    int main()
+    {
+        std::vector<double> amplitudes;
+        std::vector<double> phases;
+        std::vector<int> frequencies;
+
+        std::string folderPath = R"(C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\geht\100Ohm)";
+
+        std::vector<std::string> filenames;
+
+        for (const auto &entry : fs::directory_iterator(folderPath))
+        {
+            if (isTextFile(entry))
+            {
+                filenames.push_back(entry.path().string());
+            }
+        }
+
+        std::sort(filenames.begin(), filenames.end());
+
+        for (const auto &filename : filenames)
+        {
+            // cout << filename << endl;
+            analyze_file(filename, amplitudes, phases);
+        }
+
+        for (auto& entry : amplitudes)
+        {
+            cout << entry << endl;
+        }
+    }
