@@ -2,7 +2,7 @@ clc
 clear
 
 %Öffnen der Dateien
-files = dir(fullfile('C:\Users\linus\Uni\Teamprojektarbeit\Messdaten\07.02.2023_1kOhm\1kHz - 9kHz', '*.txt*'));
+files = dir(fullfile('C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\geht\1kOhm', '*.txt*'));
 
 
 for file = 1:size(files)
@@ -15,6 +15,7 @@ for file = 1:size(files)
 
     %Bestimmung der Datenpunkte
     dataPoints = round(fSample/f, -0);
+   
 
     %Extrahieren der Messwerte in zwei Spannungsvektoren
     data = fscanf(fileId, '%d', [dataPoints*2, 1]);
@@ -35,18 +36,18 @@ for file = 1:size(files)
     current = voltage2/100;
 
     % %Plotten der gemessenen Spannungen und des Stroms
-    % figure("Name", f + " Hz");
-    % tiledlayout(2, 1);
-    % nexttile;
-    % plot(tVector, voltage1, tVector, voltage2, tVector, voltageDut);
-    % title('Spannungen in mV');
-    % xlabel ('Zeit/s');
-    % ylabel ('Spannung/mV');
-    % legend('Uges', 'Ushunt', 'Udut')
-    % 
-    % nexttile;
-    % plot(tVector, current);
-    % title('Strom in mA')
+%     figure("Name", f + " Hz");
+%     tiledlayout(2, 1);
+%     nexttile;
+%     plot(tVector, voltage1, tVector, voltage2, tVector, voltageDut);
+%     title('Spannungen in mV');
+%     xlabel ('Zeit/s');
+%     ylabel ('Spannung/mV');
+%     legend('Uges', 'Ushunt', 'Udut')
+%     
+%     nexttile;
+%     plot(tVector, current);
+%     title('Strom in mA')
 
     %Berechnung des Phasenspektrums der Impedanz
     [v1Max, i] = max(voltage1);

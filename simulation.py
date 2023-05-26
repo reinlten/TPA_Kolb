@@ -74,8 +74,8 @@ def main():
     ax[0].grid(True)
     
     # Plot the magnitude response on a logarithmic scale
-    # ax[1].semilogx(frequencies, 20*np.log10(mag), 'b')
-    ax[1].plot(frequencies, mag, 'b')
+    ax[1].semilogx(frequencies, 20*np.log10(mag), 'b')
+    # ax[1].plot(frequencies, mag, 'b')
     ax[1].set_xlabel('Frequency (Hz)')
     ax[1].set_ylabel('Magnitude (dB)')
     ax[1].grid(True)

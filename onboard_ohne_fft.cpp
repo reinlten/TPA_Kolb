@@ -4,6 +4,13 @@
 #include <cmath>
 #include <filesystem>
 
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+#include <dirent.h>
+#include <sys/types.h>
+
 struct ComplexNumber
 {
     double real;
@@ -12,21 +19,41 @@ struct ComplexNumber
 
 int main()
 {
+    std::cout << 1 << std::endl;
+    #include <iostream>
+    #include <fstream>
+    #include <vector>
+    #include <cmath>
+    #include <sys/types.h>
+    #include <dirent.h>
+
     std::vector<double> magImpVector;
     std::vector<double> phaseVector;
     std::vector<ComplexNumber> impCVector;
 
-    std::string folderPath = "C:\\Users\\jonas\\Desktop\\Teamprojektarbeit\\Aktuell\\Messungen BBB\\geht\\1kOhm\\";
+    std::string folderPath = "/home/debian/";
     std::vector<std::string> fileNames;
 
-    // Open the directory and get the list of files
-    for (const auto &entry : std::filesystem::directory_iterator(folderPath))
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir(folderPath.c_str())) != nullptr)
     {
-        if (entry.is_regular_file())
+        // Iterate over files in the directory
+        while ((ent = readdir(dir)) != nullptr)
         {
-            fileNames.push_back(entry.path().filename().string());
+            if (ent->d_type == DT_REG)
+            {
+                fileNames.push_back(ent->d_name);
+            }
         }
+        closedir(dir);
     }
+    else
+    {
+        // Failed to open directory
+        std::cout << "Failed to open directory: " << folderPath << std::endl;
+    }
+    std::cout << 2 << std::endl;
     // std::cout << 1 << std::endl;
     for (const auto &fileName : fileNames)
     {
@@ -48,6 +75,7 @@ int main()
 
         // Close the file
         file.close();
+        std::cout << 3 << std::endl;
 
         // Generate the time vector
         double dTime = 1.0 / f_sample;
@@ -119,11 +147,9 @@ int main()
         double magVDut = (maxVDut - minVDut) / 2.0;
         double magCurrent = (maxCurrent - minCurrent) / 2.0;
 
-        // std::cout << magVDut << std::endl;
-        // std::cout << magCurrent << std::endl;
-
         // Calculation of impedance magnitude
         double magImp = magVDut / magCurrent;
+        std::cout << magImp << std::endl;
 
         // Calculation of real and imaginary parts of impedance
         ComplexNumber impC;
@@ -144,10 +170,11 @@ int main()
     // (code to plot Nyquist diagram omitted for brevity)
 
     // Print magnitude values
-    std::cout << "Magnitude Values     " << "Phase Values" << std::endl;
+    std::cout << "Magnitude Values     "
+              << "Phase Values" << std::endl;
     for (int i = 0; i < magImpVector.size(); i++)
     {
-        std::cout << magImpVector[i] << "               " << phaseVector[i] << std::endl;
+        std::cout << magImpVector[i] << "                " << phaseVector[i] << std::endl;
     }
 
     // // Print phase values

@@ -17,12 +17,11 @@ with open(filepath, 'r') as file:
         lines.append(row)     
 
 file.close()
-print(len(lines))
 
 # Splits the lines in Header and Data
 header = lines[:10]
 data = lines[10:number_of_samples + 10]
-print(len(data))
+
 
 # Splits the data in seperate arrays
 time = []
@@ -60,9 +59,7 @@ phases_current = np.angle(fft_coeff_current)
 
 sample_frequency = 1000000000
 df = sample_frequency / number_of_samples
-print(df)
 frequency_vector = np.arange(0, number_of_samples * df, df)
-print(frequency_vector[:10])
 
 # Creates the plots
 fig, ax = plt.subplots(2, 2, figsize=(12, 7))

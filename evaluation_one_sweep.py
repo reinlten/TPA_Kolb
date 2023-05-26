@@ -6,7 +6,7 @@ from scipy import signal, stats
 from scipy.stats import trim_mean
 
 # Pfad wo die Ordner mit den Messungen liegen
-measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\geht\rc_50000"
+measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\geht\100Ohm"
 
 # Arrays für die Speicherung der Amplituden, Phasen und Frequenzen
 magnitudes = []
@@ -81,7 +81,7 @@ for file in file_paths:
     fft_coefficients_voltage_dut = []
     for i in range(len(fft_coefficients_voltage1)):
         fft_coefficients_voltage_dut.append(fft_coefficients_voltage1[i] - fft_coefficients_voltage2[i])
-
+  
     # Stromstärkewerte durch DUT werden über Ohmsches Gesetz und Shuntspannung berechnet
     current = list(map(lambda x: x / 100, voltage2))
 
