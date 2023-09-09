@@ -2,14 +2,32 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import re
-from scipy import signal, stats
-from scipy.stats import trim_mean
 
-# Pfad wo die Ordner mit den Messungen liegen
-measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\08.08.2023\1"
-shunt_value = 100000
+import tkinter as tk
+from tkinter import filedialog
 
-# Arrays für die Speicherung der Amplituden, Phasen und Frequenzen
+finished = False
+parent_directory = None
+
+
+print("Please choose the folder of the measurent")
+
+# Create the main window (root)
+root = tk.Tk()
+root.withdraw()  # Hide the main window
+
+# Open the folder dialog with the initial directory
+selected_folder = filedialog.askdirectory(initialdir=parent_directory)
+
+parent_directory = os.path.dirname(selected_folder)
+
+print(selected_folder)
+print(parent_directory)
+
+measurement_path = selected_folder
+
+shunt_input = input("What is the value of the shunt resistor?")
+shunt_value = int(shunt_input)
 magnitudes = []
 phases = []
 frequencies = []
@@ -28,7 +46,6 @@ def extract_number(file_path):
 file_paths = os.listdir(measurement_path)
 file_paths = sorted(file_paths, key=extract_number)
 
-# Ab hier Auswertung einer Textdatei
 for file in file_paths:
     file_path = os.path.join(measurement_path, file)
     
@@ -61,10 +78,6 @@ for file in file_paths:
             first, second = data[i].split()
             voltage1.append(int(first))
             voltage2.append(int(second))
-    
-    # proportiontocut = 0.05  # Proportion of values to cut
-    # voltage1 = stats.mstats.winsorize(voltage1, limits=[proportiontocut, proportiontocut])
-    # voltage2 = stats.mstats.winsorize(voltage2, limits=[proportiontocut, proportiontocut])
 
     # Größen for die Visualisierung werden berechnet
     dt = 1 / sample_freq
@@ -79,7 +92,6 @@ for file in file_paths:
     fft_coefficients_voltage1[0] /= 2
     fft_coefficients_voltage2[0] /= 2
     
-    
     # Fourierkoeffizienten der DUT-Spannung wird berechnet
     fft_coefficients_voltage_dut = []
     for i in range(len(fft_coefficients_voltage1)):
@@ -93,7 +105,7 @@ for file in file_paths:
     
     fft_coefficients_current[0] /= 2
     
-    # Amplituden der DUT-Spannuns und des DUT-Stroms werden berechnet
+    # Amplituden der DUT-Spannung und des DUT-Stroms werden berechnet
     magnitudes_voltage_dut = np.abs(fft_coefficients_voltage_dut)
     magnitudes_current = np.abs(fft_coefficients_current)
 
