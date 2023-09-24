@@ -2,29 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import re
-
 import tkinter as tk
 from tkinter import filedialog
 
-finished = False
-parent_directory = None
-
-
-print("Please choose the folder of the measurent")
+print("Please choose the folder of the measurement")
 
 # Create the main window (root)
 root = tk.Tk()
 root.withdraw()  # Hide the main window
 
 # Open the folder dialog with the initial directory
-selected_folder = filedialog.askdirectory(initialdir=parent_directory)
-
-parent_directory = os.path.dirname(selected_folder)
-
-print(selected_folder)
-print(parent_directory)
-
-measurement_path = selected_folder
+measurement_path = filedialog.askdirectory()
 
 shunt_input = input("What is the value of the shunt resistor?")
 shunt_value = int(shunt_input)
@@ -169,30 +157,25 @@ for file in file_paths:
 fig, ax = plt.subplots(2, 2, figsize=(12, 7))
 plt.subplots_adjust(hspace=0.5, wspace=0.5)
 
-ax[0][0].scatter(real_parts, imag_parts)
-ax[0][0].set_title("Nyquist-Diagramm")
-ax[0][0].set_xlabel("Realteil")
-ax[0][0].set_ylabel("Imaginärteil")
-# ax[0][0].set_xlim(100, 700)
-# ax[0][0].set_ylim(-120, 0)
+ax[0][0].semilogx(frequencies, spannungsverhältnis)
+ax[0][0].set_title("U2 / U0")
+ax[0][0].set_xlabel("Frequenz (Hz)")
+ax[0][0].set_ylabel("Verhältnis von U2 / U0")
+ax[0][0].set_ylim(0, 0.6)
 
-# ax[1][0].scatter(real_parts, imag_parts)
-# ax[1][0].set_title("Nyquist-Diagramm")
-# ax[1][0].set_xlabel("Realteil")
-# ax[1][0].set_ylabel("Imaginärteil")
+ax[0][1].scatter(real_parts, imag_parts)
+ax[0][1].set_title("Nyquist-Diagramm")
+ax[0][1].set_xlabel("Realteil")
+ax[0][1].set_ylabel("Imaginärteil")
+# ax[0][1].set_xlim(100, 700)
+# ax[0][1].set_ylim(-120, 0)
 
-ax[1][0].semilogx(frequencies, spannungsverhältnis)
-ax[1][0].set_title("U2 / U0")
-ax[1][0].set_xlabel("Frequenz (Hz)")
-ax[1][0].set_ylabel("Verhältnis von U2 / U0")
-ax[1][0].set_ylim(0, 0.6)
-
-
-ax[0][1].semilogx(frequencies, magnitudes)
-ax[0][1].set_title("Amplitudengang")
-ax[0][1].set_xlabel('Frequenz (Hz)')
-ax[0][1].set_ylabel("Amplitude (Ohm)")
-# ax[0][1].set_ylim(100, 700)
+ax[1][0].semilogx(frequencies, magnitudes)
+ax[1][0].set_title("Amplitudengang")
+ax[1][0].set_xlabel('Frequenz (Hz)')
+ax[1][0].set_ylabel("Amplitude (Ohm)")
+# ax
+# [1][0].set_ylim(100, 700)
 
 ax[1][1].semilogx(frequencies, phases)
 ax[1][1].set_title("Phasengang")
@@ -202,21 +185,3 @@ ax[1][1].set_ylabel("Phase (°)")
 
 plt.show()
 
-# indices = [0, 9, 49, 99]
-
-# for index in indices:
-#     print(spannungsverhältnis[index]
-
-# for i in range(len(spannungsverhältnis)):
-#     print(frequencies[i], spannungsverhältnis[i])
-
-border = 0.99 * spannungsverhältnis[0]
-for i in range(len(spannungsverhältnis)):
-    if spannungsverhältnis[i] < border:
-        print("Under border at:", frequencies[i], "Hz")
-        print(100 - (magnitudes[0] / magnitudes[i] * 100), "Prozent") 
-        break
-
-
-# for i in range(len(magnitudes)):
-#     print(magnitudes[i] / magnitudes[0] * 100) 
