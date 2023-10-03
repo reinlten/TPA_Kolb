@@ -2,21 +2,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import re
-from scipy import signal, stats
-from scipy.stats import trim_mean
+import math
+import cmath
+
 
 # Pfad wo die Ordner mit den Messungen liegen
-measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\08.08.2023\1"
-shunt_value = 100000
+measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\15.09.2023\5"
+shunt_value = 12000
 
-# Arrays für die Speicherung der Amplituden, Phasen und Frequenzen
+# Arrays für die Speicherung wichtiger Werte
 magnitudes = []
 phases = []
 frequencies = []
 real_parts = []
 imag_parts = []
 last_phase = 0
-spannungsverhältnis = []
+amplitudenverhältnis = []
+phasenverhältnis = []
+# c1 = []
+# c2 = []
+
 
 # Hilfsfunktion zur Sortierung der Dateien
 def extract_number(file_path):
@@ -62,10 +67,6 @@ for file in file_paths:
             voltage1.append(int(first))
             voltage2.append(int(second))
     
-    # proportiontocut = 0.05  # Proportion of values to cut
-    # voltage1 = stats.mstats.winsorize(voltage1, limits=[proportiontocut, proportiontocut])
-    # voltage2 = stats.mstats.winsorize(voltage2, limits=[proportiontocut, proportiontocut])
-
     # Größen for die Visualisierung werden berechnet
     dt = 1 / sample_freq
     df = sample_freq / number_of_samples
@@ -78,8 +79,7 @@ for file in file_paths:
 
     fft_coefficients_voltage1[0] /= 2
     fft_coefficients_voltage2[0] /= 2
-    
-    
+
     # Fourierkoeffizienten der DUT-Spannung wird berechnet
     fft_coefficients_voltage_dut = []
     for i in range(len(fft_coefficients_voltage1)):
@@ -102,28 +102,34 @@ for file in file_paths:
     phases_current = np.angle(fft_coefficients_current) 
     
     # Daten der aktuellen Frequenz werden ausgegeben
-    print(f"Current frequency: {current_freq} Hz")
+    print(f"\nAktuelle Frequenz: {current_freq} Hz")
 
-    print(f"Magnitude of DC component of voltage: {magnitudes_voltage_dut[0]} mV")
-    print(f"Magnitude of DC component of current: {magnitudes_current[0]} mA")
+    # Gleichanteile werden ausgegeben
+    print(f"Gleichanteil der Spannung: {magnitudes_voltage_dut[0]} mV")
+    print(f"Gleichanteil des Stroms: {magnitudes_current[0]} mA")
 
     # Position der Werte der aktuellen Frequenz wird berechnet
     index = int(current_freq / df)
 
+    # Amplituden der aktuellen Frequenz werden berechnet
     mag1 = np.abs(fft_coefficients_voltage1)
     mag2 = np.abs(fft_coefficients_voltage2)
-    print("last amplitude", np.abs(fft_coefficients_voltage2[-1]))
-    spannungsverhältnis.append(mag2[index] / mag1[index])
-    
+    amplitudenverhältnis.append(mag2[index] / mag1[index])
+
+    # Phasen der aktuellen Frequenz werden berechnet
+    phase1 = np.angle(fft_coefficients_voltage1)
+    phase2 = np.angle(fft_coefficients_voltage2)
+    phasenverhältnis.append(phase1[index] / phase2[index])
 
     # Phasen werden in Grad umgerechnet
     phase_voltage_dut = np.rad2deg(phases_voltage_dut[index])
     phase_current = np.rad2deg(phases_current[index])
 
-    print(f"Magnitude of voltage: {magnitudes_voltage_dut[index]} mV")
-    print(f"Magnitude of current: {magnitudes_current[index]} mA")
-    print(f"Phase of voltage: {phase_voltage_dut} degrees")
-    print(f"Phase of current: {phase_current} degrees")
+    # Betraf und Phase der Shuntspannung und des Shuntstroms werden ausgegeben
+    print(f"Betrag der Shuntspannung: {magnitudes_voltage_dut[index]} mV")
+    print(f"Betrag des Shuntstroms: {magnitudes_current[index]} mA")
+    print(f"Phase der Shuntspannung: {phase_voltage_dut} °")
+    print(f"Phase des Shuntstroms: {phase_current} °")
 
     # Berechnet die Amplitude und die Phase der Impedanz bei der aktuellen Frequenz
     magnitude_impedance_dut = magnitudes_voltage_dut[index] / magnitudes_current[index]
@@ -135,7 +141,7 @@ for file in file_paths:
             phase_impedance_dut -= 360
         
     last_phase = phase_impedance_dut    
-    
+
     # Phase der Impedanz wird zurückgerechnet auf radian
     phase_in_rad = np.deg2rad(phase_impedance_dut)
     
@@ -143,8 +149,8 @@ for file in file_paths:
     real = magnitude_impedance_dut * np.cos(phase_in_rad)
     imag = magnitude_impedance_dut * np.sin(phase_in_rad)
 
-    print(f"Magnitude of Impedance: {magnitude_impedance_dut} Ohm")
-    print(f"Phase of Impedance: {phase_impedance_dut} degrees")
+    print(f"Betrag der Impedanz: {magnitude_impedance_dut:} \u03A9")
+    print(f"Phase der Impedanz: {phase_impedance_dut} °")
 
     # Werte der aktuellen Frequenz werden zur Gesamtmessung hinzugefügt
     frequencies.append(current_freq)
@@ -153,58 +159,54 @@ for file in file_paths:
     real_parts.append(real)
     imag_parts.append(imag)
         
-# Visualisiert den Amplituden und Phasengang der Messung
-fig, ax = plt.subplots(2, 2, figsize=(12, 7))
-plt.subplots_adjust(hspace=0.5, wspace=0.5)
+# Ab hier Erstellung der Diagramme
+fig1 = plt.figure(figsize = (8,5))
+plt.scatter(frequencies, amplitudenverhältnis)
+plt.xscale("log")
+plt.title("[a]", size = 15)
+plt.xlabel("Frequenz / Hz", size = 12)
+plt.ylabel("U2/U0 / - ", size = 12)
+plt.ylim(0,amplitudenverhältnis[-1] * 2)
+plt.savefig("amplitudenverhältnis.png")
 
-ax[0][0].scatter(real_parts, imag_parts)
-ax[0][0].set_title("Nyquist-Diagramm")
-ax[0][0].set_xlabel("Realteil")
-ax[0][0].set_ylabel("Imaginärteil")
-# ax[0][0].set_xlim(100, 700)
-# ax[0][0].set_ylim(-120, 0)
+fig2 = plt.figure(figsize = (8,5))
+plt.scatter(frequencies, phasenverhältnis)
+plt.xscale("log")
+plt.title("[b]", size = 15)
+plt.xlabel("Frequenz / Hz", size = 12)
+plt.ylabel("phi2/phi1 / - ", size = 12)
+plt.ylim(0,phasenverhältnis[-1] * 2)
+plt.savefig("phasenverhältnis.png")
 
-# ax[1][0].scatter(real_parts, imag_parts)
-# ax[1][0].set_title("Nyquist-Diagramm")
-# ax[1][0].set_xlabel("Realteil")
-# ax[1][0].set_ylabel("Imaginärteil")
+fig3 = plt.figure(figsize = (8,5))
+plt.scatter(frequencies, magnitudes)
+plt.xscale("log")
+plt.title("[c]", size = 15)
+plt.xlabel("Frequenz / Hz", size = 12)
+plt.ylabel("Betrag / \u03A9 ", size = 12)
+plt.ylim(0,magnitudes[-1] * 2)
+plt.savefig("Betragsgang.png")
 
-ax[1][0].semilogx(frequencies, spannungsverhältnis)
-ax[1][0].set_title("U2 / U0")
-ax[1][0].set_xlabel("Frequenz (Hz)")
-ax[1][0].set_ylabel("Verhältnis von U2 / U0")
-ax[1][0].set_ylim(0, 0.6)
+fig4 = plt.figure(figsize = (8,5))
+plt.scatter(frequencies, phases)
+plt.xscale("log")
+plt.title("[d]", size = 15)
+plt.xlabel("Frequenz / Hz", size = 12)
+plt.ylabel("Phase / ° ", size = 12)
+plt.ylim(0,phases[-1] * 2)
+plt.savefig("Phasengang.png")
 
+fig5 = plt.figure(figsize = (8,8))
+plt.scatter(real_parts, imag_parts)
+# plt.xscale("log")
+plt.title("[e]", size = 15)
+plt.xlabel("R / \u03A9", size = 12)
+plt.ylabel("X / \u03A9 ", size = 12)
+# plt.ylim(0,phases[-1] * 2)
+plt.savefig("Nyquist.png")
 
-ax[0][1].semilogx(frequencies, magnitudes)
-ax[0][1].set_title("Amplitudengang")
-ax[0][1].set_xlabel('Frequenz (Hz)')
-ax[0][1].set_ylabel("Amplitude (Ohm)")
-# ax[0][1].set_ylim(100, 700)
-
-ax[1][1].semilogx(frequencies, phases)
-ax[1][1].set_title("Phasengang")
-ax[1][1].set_xlabel('Frequenz (Hz)')
-ax[1][1].set_ylabel("Phase (°)")
-# ax[1][1].set_ylim(-12, 0)
-
-plt.show()
-
-# indices = [0, 9, 49, 99]
-
-# for index in indices:
-#     print(spannungsverhältnis[index]
-
-# for i in range(len(spannungsverhältnis)):
-#     print(frequencies[i], spannungsverhältnis[i])
-
-border = 0.99 * spannungsverhältnis[0]
-for i in range(len(spannungsverhältnis)):
-    if spannungsverhältnis[i] < border:
-        print("Under border at:", frequencies[i], "Hz")
-        print(100 - (magnitudes[0] / magnitudes[i] * 100), "Prozent") 
-        break
+# plt.show()
 
 
-# for i in range(len(magnitudes)):
-#     print(magnitudes[i] / magnitudes[0] * 100) 
+# for i in range(len(phasenverhältnis)):
+#     print(f" c1 {c1[i]:<10.5f}   c2 {c2[i]:<10.5f}   pv {phasenverhältnis[i]:.5f}")
