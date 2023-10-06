@@ -2,11 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import re
-import math
-import cmath
 
 
-# Pfad wo die Ordner mit den Messungen liegen
+
+# Pfad in dem die Ordner mit den Messungen liegen
 measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\15.09.2023\5"
 shunt_value = 12000
 
@@ -159,53 +158,58 @@ for file in file_paths:
     real_parts.append(real)
     imag_parts.append(imag)
         
+# font = {'fontname':'Arial'}
+# hfont = {'fontname':'Helvetica'}
+
 # Ab hier Erstellung der Diagramme
 fig1 = plt.figure(figsize = (8,5))
 plt.scatter(frequencies, amplitudenverhältnis)
 plt.xscale("log")
-plt.title("[a]", size = 15)
+plt.title("[a]", size = 15, font = "Arial")
 plt.xlabel("Frequenz / Hz", size = 12)
 plt.ylabel("U2/U0 / - ", size = 12)
+plt.xticks(fontsize=17, font ="Arial")
+plt.yticks(fontsize=17, font="Arial")
 plt.ylim(0,amplitudenverhältnis[-1] * 2)
-plt.savefig("amplitudenverhältnis.png")
+plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\amplitudenverhältnis.png")
 
 fig2 = plt.figure(figsize = (8,5))
 plt.scatter(frequencies, phasenverhältnis)
 plt.xscale("log")
 plt.title("[b]", size = 15)
 plt.xlabel("Frequenz / Hz", size = 12)
-plt.ylabel("phi2/phi1 / - ", size = 12)
+plt.ylabel("\u03C62/\u03C61 / - ", size = 12)
 plt.ylim(0,phasenverhältnis[-1] * 2)
-plt.savefig("phasenverhältnis.png")
+plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\phasenverhältnis.png")
 
-fig3 = plt.figure(figsize = (8,5))
-plt.scatter(frequencies, magnitudes)
-plt.xscale("log")
-plt.title("[c]", size = 15)
-plt.xlabel("Frequenz / Hz", size = 12)
-plt.ylabel("Betrag / \u03A9 ", size = 12)
-plt.ylim(0,magnitudes[-1] * 2)
-plt.savefig("Betragsgang.png")
-
-fig4 = plt.figure(figsize = (8,5))
-plt.scatter(frequencies, phases)
-plt.xscale("log")
-plt.title("[d]", size = 15)
-plt.xlabel("Frequenz / Hz", size = 12)
-plt.ylabel("Phase / ° ", size = 12)
-plt.ylim(0,phases[-1] * 2)
-plt.savefig("Phasengang.png")
-
-fig5 = plt.figure(figsize = (8,8))
-plt.scatter(real_parts, imag_parts)
+# fig3 = plt.figure(figsize = (8,5))
+# plt.scatter(frequencies, magnitudes)
 # plt.xscale("log")
-plt.title("[e]", size = 15)
-plt.xlabel("R / \u03A9", size = 12)
-plt.ylabel("X / \u03A9 ", size = 12)
-# plt.ylim(0,phases[-1] * 2)
-plt.savefig("Nyquist.png")
+# plt.title("[c]", size = 15)
+# plt.xlabel("Frequenz / Hz", size = 12)
+# plt.ylabel("Betrag / \u03A9 ", size = 12)
+# plt.ylim(0,magnitudes[-1] * 2)
+# plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\Betragsgang.png")
 
-# plt.show()
+# fig4 = plt.figure(figsize = (8,5))
+# plt.scatter(frequencies, phases)
+# plt.xscale("log")
+# plt.title("[d]", size = 15)
+# plt.xlabel("Frequenz / Hz", size = 12)
+# plt.ylabel("Phase / ° ", size = 12)
+# plt.ylim(0,phases[-1] * 2)
+# plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\Phasengang.png")
+
+# fig5 = plt.figure(figsize = (8,8))
+# plt.scatter(real_parts, imag_parts)
+# # plt.xscale("log")
+# plt.title("[e]", size = 15)
+# plt.xlabel("R / \u03A9", size = 12)
+# plt.ylabel("X / \u03A9 ", size = 12)
+# # plt.ylim(0,phases[-1] * 2)
+# plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\Nyquist.png")
+
+plt.show()
 
 
 # for i in range(len(phasenverhältnis)):
