@@ -7,10 +7,10 @@ import re
 
 # Pfad in dem die Ordner mit den Messungen liegen
 
-# measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\08.08.2023\1"
-# shunt_value = 100
-measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\08.08.2023\4"
-shunt_value = 100000
+measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\08.08.2023\1"
+shunt_value = 100
+# measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\08.08.2023\4"
+# shunt_value = 100000
 # measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\13.09.2023\1"
 # shunt_value = 100
 # measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\15.09.2023\1"
@@ -187,7 +187,7 @@ plt.ylabel("\u03C6(U̲2) - \u03C6(U̲1) / - ", size = 12, font = "Arial")
 plt.xticks(fontsize=17, font ="Arial")
 plt.yticks(fontsize=17, font="Arial")
 plt.tick_params("both", labelsize = 12)
-plt.ylim(-0.05,0.15)
+plt.ylim(-0.05, 0.15)
 plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\phasendifferenz.png")
 
 fig3 = plt.figure(figsize = (8,5))
@@ -209,7 +209,8 @@ plt.ylabel("\u03C6(Z̲) / ° ", size = 12, font = "Arial")
 plt.xticks(fontsize=17, font ="Arial")
 plt.yticks(fontsize=17, font="Arial")
 plt.tick_params("both", labelsize = 12)
-plt.ylim(-20 ,5)
+# plt.ylim(-20 ,5)
+plt.ylim(-20, 5)
 plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\Phasengang.png")
 
 
@@ -222,10 +223,10 @@ plt.yticks(font="Arial")
 plt.tick_params("both", labelsize = 12)
 plt.ylim(-21, 1)
 plt.xlim(80, 101)
-plt.annotate("\u03C9=10 kHz", xy=(real_parts[0], imag_parts[1]), xytext=(92.5, -1.5), size = 15,
+plt.annotate("\u03C9=10 kHz", xy=(real_parts[0], imag_parts[1]), xytext=(89, -2.5), size = 15,
              arrowprops=dict(facecolor='black', shrink=0.05),
              )
-plt.annotate("\u03C9=1 MHz ", xy=(real_parts[-1], imag_parts[-1]), xytext=(86, -10), size = 15,
+plt.annotate("\u03C9=1 MHz ", xy=(real_parts[-1], imag_parts[-1]), xytext=(85, -17.5), size = 15,
              arrowprops=dict(facecolor='black', shrink=0.05),
              )
 plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\Nyquist.png")
