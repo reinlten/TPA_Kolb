@@ -6,8 +6,16 @@ import re
 
 
 # Pfad in dem die Ordner mit den Messungen liegen
-measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\08.08.2023\1"
-shunt_value = 100
+
+# measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\08.08.2023\1"
+# shunt_value = 100
+measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\08.08.2023\4"
+shunt_value = 100000
+# measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\13.09.2023\1"
+# shunt_value = 100
+# measurement_path = r"C:\Users\jonas\Desktop\Teamprojektarbeit\Aktuell\Messungen BBB\15.09.2023\1"
+# shunt_value = 100
+
 
 # Arrays für die Speicherung wichtiger Werte
 magnitudes = []
@@ -118,7 +126,7 @@ for file in file_paths:
     # Phasen der aktuellen Frequenz werden berechnet
     phase1 = np.angle(fft_coefficients_voltage1)
     phase2 = np.angle(fft_coefficients_voltage2)
-    phasenverhältnis.append(phase1[index] / phase2[index])
+    phasenverhältnis.append(phase2[index] - phase1[index])
 
     # Phasen werden in Grad umgerechnet
     phase_voltage_dut = np.rad2deg(phases_voltage_dut[index])
@@ -158,55 +166,68 @@ for file in file_paths:
     real_parts.append(real)
     imag_parts.append(imag)
     
-# font = {'fontname':'Arial'}
-# hfont = {'fontname':'Helvetica'}
 
 # Ab hier Erstellung der Diagramme
 fig1 = plt.figure(figsize = (8,5))
 plt.scatter(frequencies, amplitudenverhältnis)
 plt.xscale("log")
-# plt.title("[a]", size = 15, font = "Arial")
-plt.xlabel("Frequenz / Hz", size = 12)
-plt.ylabel("U2/U0 / - ", size = 12)
+plt.xlabel("Frequenz / Hz", size = 12, font = "Arial")
+plt.ylabel("Û2/Û0 / - ", size = 12, font = "Arial")
 plt.xticks(fontsize=17, font ="Arial")
 plt.yticks(fontsize=17, font="Arial")
-plt.ylim(0,amplitudenverhältnis[-1] * 2)
+plt.tick_params("both", labelsize = 12)
+plt.ylim(0,1)
 plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\amplitudenverhältnis.png")
 
 fig2 = plt.figure(figsize = (8,5))
 plt.scatter(frequencies, phasenverhältnis)
 plt.xscale("log")
-# plt.title("[b]", size = 15)
-plt.xlabel("Frequenz / Hz", size = 12)
-plt.ylabel("\u03C62/\u03C61 / - ", size = 12)
-plt.ylim(0,phasenverhältnis[-1] * 2)
-plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\phasenverhältnis.png")
+plt.xlabel("Frequenz / Hz", size = 12, font = "Arial")
+plt.ylabel("\u03C6(U̲2) - \u03C6(U̲1) / - ", size = 12, font = "Arial")
+plt.xticks(fontsize=17, font ="Arial")
+plt.yticks(fontsize=17, font="Arial")
+plt.tick_params("both", labelsize = 12)
+plt.ylim(-0.05,0.15)
+plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\phasendifferenz.png")
 
 fig3 = plt.figure(figsize = (8,5))
 plt.scatter(frequencies, magnitudes)
 plt.xscale("log")
-# plt.title("[c]", size = 15)
-plt.xlabel("Frequenz / Hz", size = 12)
-plt.ylabel("Betrag / \u03A9 ", size = 12)
-plt.ylim(0,magnitudes[-1] * 2)
+plt.xlabel("Frequenz / Hz", size = 12, font = "Arial")
+plt.ylabel("Ẑ / \u03A9 ", size = 12, font = "Arial")
+plt.xticks(fontsize=17, font ="Arial")
+plt.yticks(fontsize=17, font="Arial")
+plt.tick_params("both", labelsize = 12)
+plt.ylim(0,180)
 plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\Betragsgang.png")
 
 fig4 = plt.figure(figsize = (8,5))
 plt.scatter(frequencies, phases)
 plt.xscale("log")
-# plt.title("[d]", size = 15)
-plt.xlabel("Frequenz / Hz", size = 12)
-plt.ylabel("Phase / ° ", size = 12)
-plt.ylim(0,phases[-1] * 2)
+plt.xlabel("Frequenz / Hz", size = 12, font = "Arial")
+plt.ylabel("\u03C6(Z̲) / ° ", size = 12, font = "Arial")
+plt.xticks(fontsize=17, font ="Arial")
+plt.yticks(fontsize=17, font="Arial")
+plt.tick_params("both", labelsize = 12)
+plt.ylim(-20 ,5)
 plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\Phasengang.png")
+
 
 fig5 = plt.figure(figsize = (8,8))
 plt.scatter(real_parts, imag_parts)
-# plt.xscale("log")
-# plt.title("[e]", size = 15)
-plt.xlabel("R / \u03A9", size = 12)
-plt.ylabel("X / \u03A9 ", size = 12)
-# plt.ylim(0,phases[-1] * 2)
+plt.xlabel("R / \u03A9", size = 12, font = "Arial")
+plt.ylabel("X / \u03A9 ", size = 12, font = "Arial")
+plt.xticks(font ="Arial")
+plt.yticks(font="Arial")
+plt.tick_params("both", labelsize = 12)
+plt.ylim(-21, 1)
+plt.xlim(80, 101)
+plt.annotate("\u03C9=10 kHz", xy=(real_parts[0], imag_parts[1]), xytext=(92.5, -1.5), size = 15,
+             arrowprops=dict(facecolor='black', shrink=0.05),
+             )
+plt.annotate("\u03C9=1 MHz ", xy=(real_parts[-1], imag_parts[-1]), xytext=(86, -10), size = 15,
+             arrowprops=dict(facecolor='black', shrink=0.05),
+             )
 plt.savefig(r"C:\Users\jonas\Desktop\diagramme_auswertung\Nyquist.png")
 
 plt.show()
