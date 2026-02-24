@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
   <diagram name="Seite-1" id="b-Xhr_XB4TN2tXRQgmBU">
-    <mxGraphModel dx="942" dy="389" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="light-dark(#FFFFFF,#FFFFFF)" math="0" shadow="0">
+    <mxGraphModel dx="1047" dy="432" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="light-dark(#FFFFFF,#FFFFFF)" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -221,6 +221,21 @@
             </Array>
             <mxPoint x="680" y="730" as="sourcePoint" />
             <mxPoint x="700" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="waAFrcE0z28S4PBFtVGl-44" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#FFFFFF);strokeColor=light-dark(#000000,#000000);" value="" vertex="1">
+          <mxGeometry height="40" width="80" x="700" y="960" as="geometry" />
+        </mxCell>
+        <mxCell id="waAFrcE0z28S4PBFtVGl-45" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=light-dark(#000000,#000000);fontFamily=arial;" value="&lt;font face=&quot;Helvetica&quot; style=&quot;font-size: 13px;&quot;&gt;pcb_files&lt;/font&gt;" vertex="1">
+          <mxGeometry height="40" width="80" x="700" y="960" as="geometry" />
+        </mxCell>
+        <mxCell id="waAFrcE0z28S4PBFtVGl-46" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;strokeColor=light-dark(#000000,#000000);entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="980" />
+            </Array>
+            <mxPoint x="680" y="780" as="sourcePoint" />
+            <mxPoint x="700" y="980" as="targetPoint" />
           </mxGeometry>
         </mxCell>
       </root>
